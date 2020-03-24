@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>ExtremeTech Siquirres | Inicio de Sesión</title>
+  <title>ExtremeTech Siquirres | Administración</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta content="" name="keywords">
   <meta content="" name="description">
@@ -31,6 +31,15 @@
 
 <body>
 
+<?php
+
+include "crud.php";
+$clsUsuarios = new usuarios();
+
+session_start();
+
+if(isset($_SESSION['nombre'])):
+?>
 
   <div class="collapse navbar-collapse custom-navmenu" id="main-navbar">
     <div class="container py-2 py-md-5">
@@ -55,7 +64,7 @@
 
   <nav class="navbar navbar-light custom-navbar">
     <div class="container">
-      <a class="navbar-brand">XTREMETECH SIQUIRRES | INICIO DE SESIÓN</a>
+      <a class="navbar-brand">XTREMETECH SIQUIRRES | SESIÓN INICIADA</a>
 
       <a href="#" class="burger" data-toggle="collapse" data-target="#main-navbar">
         <span></span>
@@ -73,49 +82,20 @@
         <div class="row mb-5 align-items-end">
           <div class="col-md-6" data-aos="fade-up">
 
-            <h2 style="text-align: center;">INICIO DE SESIÓN</h2>
-            <p  style="text-align: center;" class="mb-0">Ingrese las credenciales correspondientes a su cuenta de administrador asignada</p>
+            <h2 style="text-align: center;"><?php echo strtoupper($_SESSION['nombre']); ?></h2>
           </div>
 
         </div>
 
-        <?php
-
-        $Id =  NULL;
-        $Contra =  NULL;
-
-        if('POST' == $_SERVER['REQUEST_METHOD']){
-
-          include 'crud.php';
-          $clsUsuario = new usuarios();
-          $clsUsuario->cargarDatos($_POST);
-          list($Id, $Contra) = $clsUsuario->validar();
-        }
-        ?>
-
-        <?php if(empty($clsUsuario) || isset($clsUsuario) && !$clsUsuario->esValido()): ?>
-
         <div class="row">
           <form method="POST" action="<?php echo $_SERVER['REQUEST_URI'] ?>">
 
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="cedula" >Identificación: </label>
-           <input type="text" name="cedula"> 
-           <br/>
-
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="contraseña" >Contraseña: </label>
-           <input type="text" name="contraseña">
-           <br/>
-
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Ingresar">
+           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Cerrar Sesión">
 
           </form>
+
+          <?php unset($_SESSION['nombre']); unset($_SESSION['ced']); ?>
         </div>
-
-        <?php elseif($clsUsuario->validarUsu()): ?>
-
-        <?php Header("Location: /XT_Siquirres/admin.php"); ?>
-
-        <?php endif; ?>
 
       </div>
     </div>
@@ -153,6 +133,10 @@
 
   <!-- Template Main JS File -->
   <script src="js/main.js"></script>
+
+<?php else: ?>
+  <?php header("Location: /XT_Siquirres/login.php") ?>
+<?php endif; ?>
 
 </body>
 
