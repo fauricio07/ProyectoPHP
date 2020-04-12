@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: database
--- Tiempo de generación: 25-03-2020 a las 00:03:55
+-- Tiempo de generación: 12-04-2020 a las 05:26:26
 -- Versión del servidor: 5.7.29
 -- Versión de PHP: 7.2.2
 
@@ -36,7 +36,6 @@ CREATE TABLE `Articulos` (
   `Categoria` varchar(50) NOT NULL,
   `Existencias` int(11) NOT NULL,
   `Foto` varchar(255) NOT NULL,
-  `Descuento` int(11) NOT NULL,
   `Fecha_Modificacion` date NOT NULL,
   `Ced_UsuarioModificador` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -45,8 +44,9 @@ CREATE TABLE `Articulos` (
 -- Volcado de datos para la tabla `Articulos`
 --
 
-INSERT INTO `Articulos` (`Codigo`, `Descripcion`, `Marca`, `Precio`, `Categoria`, `Existencias`, `Foto`, `Descuento`, `Fecha_Modificacion`, `Ced_UsuarioModificador`) VALUES
-(1, 'Monitor curvo 1500R de 24\", resolucion 1920x1080, frecuencia vertical 144 Hz, entradas HDMI - DisplayPort, tipo de panel MVA, AMD Freesync.', 'MSI', 159000, 'Monitores', 8, 'falta el URL de la imagen', 0, '2020-03-20', 702490253);
+INSERT INTO `Articulos` (`Codigo`, `Descripcion`, `Marca`, `Precio`, `Categoria`, `Existencias`, `Foto`, `Fecha_Modificacion`, `Ced_UsuarioModificador`) VALUES
+(1, 'Monitor curvo 1500R de 24\", resolucion 1920x1080, frecuencia vertical 144 Hz, entradas HDMI - DisplayPort, tipo de panel MVA, AMD Freesync.', 'MSI', 159000, 'Monitores', 8, 'img/Monitores/msi-optix-mag241c-144-hz-1-ms-freesync.jpg', '2020-03-20', 702490253),
+(2, 'ASUS VIVOBOOK X540UA - CORE I3 8130 - 4 GB RAM - Memoria 4 GB DDR4 2400 - Intel HD Graphics 620 - Disco Duro 1 TB - Pantalla 15\" 1366 x 768 resolución', 'ASUS', 244000, 'Laptops', 5, 'img/Computadoras/asus-vivobook-x540ma.jpg', '2020-04-04', 702490253);
 
 -- --------------------------------------------------------
 
@@ -97,7 +97,7 @@ ALTER TABLE `Usuarios`
 -- AUTO_INCREMENT de la tabla `Articulos`
 --
 ALTER TABLE `Articulos`
-  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

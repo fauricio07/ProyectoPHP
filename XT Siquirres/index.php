@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,9 +28,17 @@
   <!-- Template Main CSS File -->
   <link href="css/style.css" rel="stylesheet">
 
+  <!-- Se instancia la clase articulos -->
+  <?php
+    require_once 'inclusiones.php';
+    $clsArt = new clsArticulos();
+  ?>
+  
 </head>
 
+
 <body>
+
 
   <div class="collapse navbar-collapse custom-navmenu" id="main-navbar">
     <div class="container py-2 py-md-5">
@@ -72,71 +81,24 @@
             <h2>Bienvenidos</h2>
             <p class="mb-0">La mayor distribuidora en equipo gaming de Costa Rica</p><p>La mejor technología al mejor precio</p>
           </div>
-          <div class="col-md-12 col-lg-6 text-left text-lg-right" data-aos="fade-up" data-aos-delay="100">
-            <div id="filters" class="filters">
-              <a href="#" data-filter="*" class="active">Todo</a>
-              <a href="#" data-filter=".web">Portátiles</a>
-              <a href="#" data-filter=".design">Escritorio</a>
-              <a href="#" data-filter=".branding">Periféricos</a>
-              <a href="#" data-filter=".photography">Otros</a>
-            </div>
-          </div>
         </div>
-        <div id="portfolio-grid" class="row no-gutter" data-aos="fade-up" data-aos-delay="200">
-          <div class="item web col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Boxed Water</h3>
-                <span>Portátiles</span>
+
+        <div id="portfolio-grid" class="row no-gutter" data-aos="fade-up" data-aos-delay="200">     
+  
+<?php foreach($clsArt->mostrarArtcls() as $articulo): ?>
+
+        <div class="item web col-sm-6 col-md-4 col-lg-4 mb-4">        
+            <a href="detalles.php?codigo=<?php echo $articulo->Codigo; ?>" class="item-wrap fancybox">
+               <div class="work-info">
+                <h3><h3><?php echo $articulo->Marca; ?></h3></h3>
+                <span><h3><?php echo $articulo->Categoria; ?></h3></span>
               </div>
-              <img class="img-fluid" src="img/img_1.jpg">
+              <img class="img-fluid" src="<?php echo $articulo->Foto; ?>"> 
             </a>
-          </div>
-          <div class="item photography col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Build Indoo</h3>
-                <span>Otros</span>
-              </div>
-              <img class="img-fluid" src="img/img_2.jpg">
-            </a>
-          </div>
-          <div class="item branding col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Cocooil</h3>
-                <span>Periféricos</span>
-              </div>
-              <img class="img-fluid" src="img/img_3.jpg">
-            </a>
-          </div>
-          <div class="item design col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Nike Shoe</h3>
-                <span>Escritorio</span>
-              </div>
-              <img class="img-fluid" src="img/img_4.jpg">
-            </a>
-          </div>
-          <div class="item photography col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Kitchen Sink</h3>
-                <span>Otros</span>
-              </div>
-              <img class="img-fluid" src="img/img_5.jpg">
-            </a>
-          </div>
-          <div class="item branding col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Amazon</h3>
-                <span>Periféricos</span>
-              </div>
-              <img class="img-fluid" src="img/img_6.jpg">
-            </a>
-          </div>
+        </div>
+
+<?php endforeach; ?>
+
         </div>
       </div>
     </div>

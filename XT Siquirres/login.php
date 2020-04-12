@@ -66,6 +66,7 @@
 
 
 
+
   <main id="main">
 
     <div class="site-section pb-0 site-portfolio">
@@ -86,17 +87,18 @@
 
         if('POST' == $_SERVER['REQUEST_METHOD']){
 
+          var_dump("Hizo post");
           include 'crud.php';
           $clsUsuario = new usuarios();
           $clsUsuario->cargarDatos($_POST);
           list($Id, $Contra) = $clsUsuario->validar();
+          //<?php echo $_SERVER['REQUEST_URI'] 
         }
         ?>
 
-        <?php if(empty($clsUsuario) || isset($clsUsuario) && !$clsUsuario->esValido()): ?>
 
         <div class="row">
-          <form method="POST" action="<?php echo $_SERVER['REQUEST_URI'] ?>">
+          <form action="admin.php" method="POST" >
 
            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="cedula" >Identificación: </label>
            <input type="text" name="cedula"> 
@@ -110,12 +112,6 @@
 
           </form>
         </div>
-
-        <?php elseif($clsUsuario->validarUsu()): ?>
-
-        <?php Header("Location: /XT_Siquirres/admin.php"); ?>
-
-        <?php endif; ?>
 
       </div>
     </div>

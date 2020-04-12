@@ -27,6 +27,23 @@
   <!-- Template Main CSS File -->
   <link href="css/style.css" rel="stylesheet">
 
+  <?php    
+  require_once 'inclusiones.php';
+
+  $_SESSION['sesion'] = true;
+  //unset($_SESSION['sesion']);
+
+  //Mientras el request no este vacío
+  if(!empty($_GET['codigo'])) {
+
+      /*
+       * @var clsArticulos $clsArtcls
+       */
+      $clsArtcls = new clsArticulos($_REQUEST);
+      $articulo = $clsArtcls->buscarArtPorCod();
+  }
+  ?>
+
 </head>
 
 <body>
@@ -38,6 +55,7 @@
         <div class="col-md-2">
           <ul class="custom-menu">
             <li><a href="index.php">Página de Inicio</a></li>
+            <br>
             <li><a href="login.php">Iniciar Sesión</a></li>
           </ul>
   </div>
@@ -58,14 +76,14 @@
     <div class="container">
       <a class="navbar-brand">EXTREME-TECH SIQUIRRES | DETALLES</a>
 
-      <a href="#" class="burger" data-toggle="collapse" data-target="#main-navbar">
+      <a class="burger" data-toggle="collapse" data-target="#main-navbar">
         <span></span>
       </a>
 
     </div>
   </nav>
 
-
+<?php if(isset($articulo)): ?>
 
   <main id="main">
 
@@ -85,106 +103,64 @@
         <div class="container">
           <div class="row align-items-stretch">
             <div class="col-md-8" data-aos="fade-up">
-              <img src="img/img_1_big.jpg" alt="Image" class="img-fluid">
+              <img src="<?php echo$articulo->Foto; ?>" alt="Image" class="img-fluid">
             </div>
             <div class="col-md-3 ml-auto" data-aos="fade-up" data-aos-delay="100">
-              <div class="sticky-content">
-                <h3 class="h3">Boxed Water</h3>
-                <p class="mb-4"><span class="text-muted">Design</span></p>
+              <div class="sticky-content"><br><br><br>
+                <h3 class="h3"><?php echo $articulo->Marca; ?></h3>
+                <p class="mb-4"><span class="text-muted"><?php echo $articulo->Categoria; ?></span></p>
 
                 <div class="mb-5">
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores illo, id recusandae molestias
-                    illum unde pariatur, enim tempora.</p>
-
+                  <p><?php echo $articulo->Descripcion; ?></p>
                 </div>
 
-
-                <h4 class="h4 mb-3">What I did</h4>
                 <ul class="list-unstyled list-line mb-5">
-                  <li>Design</li>
-                  <li>HTML5/CSS3</li>
-                  <li>CMS</li>
-                  <li>Logo</li>
+                  <li><strong>Existencias: </strong><?php echo $articulo->Existencias; ?></li>
+                  <li><strong>Precio: </strong>₡<?php echo $articulo->Precio; ?></li>
                 </ul>
 
-                <p><a href="#" class="readmore">Visit Website</a></p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
+  <?php if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
 
-      <div class="site-section pb-0">
-        <div class="container">
-          <div class="row justify-content-center text-center mb-4">
-            <div class="col-5">
-              <h3 class="h3 heading">OTROS ARTICULOS</h3>
-              <p>Lo último en tecnología a su alcance</p>
+            <div class="container" style="text-align: center;">
+
+                <h4 class="h2 mb-3">Mantenimiento de artículos</h4><br>
+                <p>
+                  <a href="configArt.php" class="btn btn-outline-success btn-lg">Agregar</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <a href="configArt.php?codigo=<?php echo $articulo->Codigo; ?>" class="btn btn-outline-warning btn-lg">Modificar</a>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <a href="configArt.php?codigo=<?php echo $articulo->Codigo; ?>" class="btn btn-outline-danger btn-lg">Eliminar</a>
+                </p>
+              
             </div>
-          </div>
 
-          <div class="row" data-aos="fade-up" data-aos-delay="200">
-          <div class="item web col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Boxed Water</h3>
-                <span>Portátiles</span>
-              </div>
-              <img class="img-fluid" src="img/img_1.jpg">
-            </a>
-          </div>
-          <div class="item photography col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Build Indoo</h3>
-                <span>Otros</span>
-              </div>
-              <img class="img-fluid" src="img/img_2.jpg">
-            </a>
-          </div>
-          <div class="item branding col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Cocooil</h3>
-                <span>Periféricos</span>
-              </div>
-              <img class="img-fluid" src="img/img_3.jpg">
-            </a>
-          </div>
-          <div class="item design col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Nike Shoe</h3>
-                <span>Escritorio</span>
-              </div>
-              <img class="img-fluid" src="img/img_4.jpg">
-            </a>
-          </div>
-          <div class="item photography col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Kitchen Sink</h3>
-                <span>Otros</span>
-              </div>
-              <img class="img-fluid" src="img/img_5.jpg">
-            </a>
-          </div>
-          <div class="item branding col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="detalles.php" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Amazon</h3>
-                <span>Periféricos</span>
-              </div>
-              <img class="img-fluid" src="img/img_6.jpg">
-            </a>
-          </div>
+  <?php endif; ?>
+
           </div>
         </div>
       </div>
 
   </main>
+
+
+
+<?php else: ?>
+
+  <div class="container">
+    
+    <br><br><br><br><br><hr>
+    <br>
+    <h1 style="color: red; text-align: center;">No se ha logrado establecer el artículo a buscar, regrese y vuelva a seleccionar el artículo...</h1>
+    <br>
+    <a href="index.php" class="btn-lg btn-block btn btn-outline-secondary">Regresar a Pantalla de Inicio</a>
+    <hr><br><br><br><br><br>
+
+  </div>
   
+<?php endif; ?>
+
   <footer class="footer" role="contentinfo">
     <div class="container">
       <div class="row">

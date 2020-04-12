@@ -41,25 +41,26 @@ class articulos {
 
 	return ($consulta->connect_errno) ? false : true;
 	}
+	
+	function consultarArt() : array
+	{
+	  
+	  include("conexion.php");
+	  $conexion = conectar();
+
+	  $articls = array();
+
+	  $sql = "SELECT * FROM Articulos";
+	  $result = $conexion->query($sql);
+	  
+	    while($row = $result->fetch_assoc()){
+
+	      $articls[] = $row;
+	    }
+	    return $articls;
+	} 
 }
 
-/* --Function de prueba--
-
-	function prueba()
-	{
-
-	include("conexion.php");
-	$conexion = conectar();
-	$sql = "SELECT Codigo, Marca, Precio FROM Articulos";
-	$result = $conexion->query($sql);
-
-	var_dump($result->num_rows);
-		while($row = $result->fetch_assoc()){
-
-			echo '********** ' . $row['Codigo'] . ' ' . $row['Marca'] . ' ' . $row['Precio'] . PHP_EOL;
-		}
-	} 
-*/
 
 
 /*
@@ -71,11 +72,11 @@ class usuarios {
 	/* @array que será cargado con los valores del metodo POST enviados desde el login */
 	protected $credenciales;
 
-	/* @bool que valida si el metodo POST me está extrayendo las credenciales vacías */
+	/* @bool que valida si el metodo POST está enviando las credenciales vacías */
 	protected $validacion;
 
-	public $nombre, $ced;
-	public $found = false;
+	//public $nombre, $ced;
+		
 
 	public function cargarDatos($post) {
 		$this->credenciales = $post;
@@ -100,25 +101,21 @@ class usuarios {
 
 		$id = $this->credenciales['cedula'];
 		$pass = $this->credenciales['contraseña'];
+		$found = false;
 
 		include 'conexion.php';
 		$conexion = conectar();
 
-		$consulta = "SELECT Nombre_Completo, Cedula, Contraseña FROM Usuarios";
+		$consulta = "SELECT * FROM Usuarios WHERE Cedula = '$id' AND Contraseña = '$pass'";
 		$resultado = $conexion->query($consulta);
 
-		while($fila = $resultado->fetch_assoc()){
-
-			if($id == $fila['Cedula'] && $pass == $fila['Contraseña']) {
+		if($resultado->num_rows == 1) {
 
 				session_start();
-				$_SESSION['nombre'] = $fila['Nombre_Completo'];
-				$_SESSION['ced'] = $fila['Cedula'];
+				$_SESSION['nombre'] = $resultado->Nombre_Completo;
+				$_SESSION['ced'] = $resultado->Cedulas;
 
-				//$nombre = $fila['Nombre_Completo'];
-				//$ced =  $fila['Cedula'];
 				$found = true;
-			}
 		}
 
 	return $found;
