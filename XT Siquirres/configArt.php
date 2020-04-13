@@ -17,7 +17,6 @@
 
   <!-- Bootstrap CSS File -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
   <!-- Vendor CSS Files -->
   <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
@@ -32,14 +31,36 @@
   require_once 'inclusiones.php';
   date_default_timezone_set('America/Costa_Rica');
 
-  //Mientras el request no este vacío
-  if(!empty($_GET['codigo'])) {
+//Mientras se encuentre iniciada una sesión
+if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true){
 
       /*
        * @var clsArticulos $clsArtcls
        */
       $clsArtcls = new clsArticulos($_REQUEST);
+      $nuevaDIR = null;
+
+      if(isset($_FILES['foto'])){
+
+        if(!empty($_FILES['foto']['name'])){
+
+        $nuevaDIR = 'img' . DIRECTORY_SEPARATOR . $_FILES['foto']['name'];
+        move_uploaded_file($_FILES['foto']['tmp_name'], __DIR__ . DIRECTORY_SEPARATOR . $nuevaDIR);
+        } else {
+
+        $nuevaDIR = $_REQUEST['urlFoto'];
+        }
+      }
+
+    //Mientras se hayan enviado datos por el metodo POST y no exita codigo
+    if(!empty($_FILES['foto']['name']) && !empty($_POST['marca']) && !empty($_POST['categoria']) && !empty($_POST['descripcion']) && !empty($_POST['precio']) && !empty($_POST['existencias']) && !empty($_POST['fechaMod']) && !empty($_POST['cedAdmin']) && !isset($_POST['codigo'])){
+      
+      $codigoArt = $clsArtcls->insertarArt($nuevaDIR);
+    }elseif (!empty($_REQUEST['codigo'])) {
+        
+      $modificado = $clsArtcls->modificarArt($nuevaDIR);
       $articulo = $clsArtcls->buscarArtPorCod();
+    }
   }
   ?>
 
@@ -47,13 +68,31 @@
 
 <body>
 
+
+<!-- Mientras se encuentre iniciada una sesión -->
+<?php if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
+
   <nav class="navbar navbar-light custom-navbar">
     <div class="container">
-      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | CONFIGURACION DE ARTICULO</a>
+      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | CONFIGURAR ARTICULO</a>
     </div>
-  </nav><br><br>
+  </nav><br>
 
-<?php if(isset($articulo)): ?>
+<!-- Mensajes informativos -->
+  <?php if(isset($codigoArt)): ?>
+    
+    <div class="alert alert-success" role="alert" style="text-align: center;">
+      <h4 class="alert-heading">¡¡¡ARTICULO CREADO!!!</h4>
+      <p>se ha creado un nuevo artículo con éxito</p>
+      <a href="detalles.php?codigo=<?php echo $codigoArt; ?>" class="btn btn-success">Ver artículo</a>
+    </div>
+  <?php elseif(isset($modificado) && $modificado != 0): ?>
+
+    <div class="alert alert-success" role="alert" style="text-align: center;">
+      <h4 class="alert-heading">¡¡¡ARTICULO MODIFICADO!!!</h4>
+      <p>se ha modificado un artículo con éxito</p>
+    </div>
+  <?php endif; ?><br>
 
 <div class="container" style="background-color: yellow; color: black; text-align: center;">
         <p class="mb-0"><strong>*** Esta página es solo para personal administrativo, los cambios que aquí se realicen no podrán ser revertidos ***
@@ -64,7 +103,7 @@
 
   <main id="main">
 
-    <form method="get" action="configArt.php">
+    <form method="post" enctype="multipart/form-data" action="configArt.php">
 
         <div class="container">
           <div class="row align-items-stretch">
@@ -72,39 +111,50 @@
 
                <div class="input-group">
                   <div class="custom-file">
+
+                    <?php if(isset($articulo)): ?>
+
+              <!-- Envía el url guardado en la BD por si el usuario no la actualiza -->
+                    <input type="hidden" name="urlFoto" value="<?php echo $articulo->Foto; ?>">
+
+              <!-- Envía el codigo del artículo que está siendo modificado -->
+                    <input type="hidden" class="form-control" aria-describedby="basic-addon1" name="codigo" id="codigo" value="<?php echo $articulo->Codigo; ?>">
+                    <input type="file" class="custom-file-input" name="foto" id="imagen"><br>                    
+                    <?php else: ?>
+
                     <input type="file" class="custom-file-input" name="foto" id="imagen" required>
+                    <?php endif; ?>
+
                     <label class="custom-file-label" for="imagen">Seleccionar imagen...</label>
 
                   </div>
                 </div>
-                  <img src="<?php echo$articulo->Foto; ?>" id="imagenmuestra"> 
+                  <img src="<?php echo isset($articulo)? $articulo->Foto : null ; ?>" id="imagenmuestra"> 
 
             </div>
 
             <div class="col-md-3 ml-auto" data-aos="fade-up" data-aos-delay="100">
               <div class="sticky-content">
-      <input type="hidden" class="form-control" aria-describedby="basic-addon1" name="codigo" id="codigo" value="<?php echo $articulo->Codigo; ?>">
-      <br>
 
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text">Marca:</span>
           </div>
-          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="marca" id="marca" value="<?php echo $articulo->Marca; ?>">
+          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="marca" id="marca" value="<?php echo isset($articulo)? $articulo->Marca : null; ?>">
         </div>
 
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text">Categoría:</span>
           </div>
-          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="categoria" id="categoria" value="<?php echo $articulo->Categoria; ?>">
+          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="categoria" id="categoria" value="<?php echo isset($articulo)? $articulo->Categoria : null; ?>">
         </div>
 
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text">Descripción: </span>
           </div>
-          <textarea style="margin-top: 0px; margin-bottom: 0px; height: 326px;" class="form-control" autocomplete="off" name="descripcion" id="descripcion"><?php echo $articulo->Descripcion; ?></textarea>
+          <textarea style="height: 326px;" class="form-control" autocomplete="off" name="descripcion" id="descripcion"><?php echo isset($articulo)? $articulo->Descripcion : null; ?></textarea>
         </div>
         
         <div class="input-group mb-3">
@@ -112,28 +162,29 @@
             <span class="input-group-text">Precio: </span>
             <span class="input-group-text">₡</span>
           </div>
-          <input type="text" class="form-control" autocomplete="off" name="precio" id="precio" value="<?php echo $articulo->Precio; ?>">
+          <input type="text" class="form-control" autocomplete="off" name="precio" id="precio" value="<?php echo isset($articulo)? $articulo->Precio : null; ?>">
         </div>
 
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text">Existencias:</span>
           </div>
-          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="existencias" id="existencias" value="<?php echo $articulo->Existencias; ?>">
+          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="existencias" id="existencias" value="<?php echo isset($articulo)? $articulo->Existencias : null; ?>">
         </div>
         
         <div class="input-group input-group-sm mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text" id="inputGroup-sizing-sm">Fecha Modificación:</span>
           </div>
-          <input type="text" class="form-control" autocomplete="off" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" readonly="true" name="fechaMod" id="fechaMod" value="<?php echo $articulo->Fecha_Modificacion; ?>">
+          <input type="text" class="form-control" autocomplete="off" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" readonly="true" name="fechaMod" id="fechaMod" value="<?php echo isset($articulo)? $articulo->Fecha_Modificacion : date('Y') . '-' . date('m') . '-' . date('d'); ?>">
         </div>
 
         <div class="input-group input-group-sm mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text" id="inputGroup-sizing-sm">ID administrador:</span>
           </div>
-          <input type="text" class="form-control" autocomplete="off" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" readonly="true" name="cedAdmin" id="cedAdmin" value="<?php echo $articulo->Ced_UsuarioModificador; ?>">
+          <input type="text" class="form-control" autocomplete="off" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" readonly="true" name="cedAdmin" id="cedAdmin" value="702490253">
+          <?php //echo isset($articulo)? $articulo->Ced_UsuarioModificador : null; ?>
         </div>
 
               </div>
@@ -143,104 +194,7 @@
           
           <div class="container" style="text-align: center;">
            <input class="btn btn-outline-primary btn-lg" type="submit" value="Guardar cambios">
-          </div><br>
-
-    </form>
-
-  </main>
-
-<?php elseif(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
-
-
-<div class="container" style="background-color: yellow; color: black; text-align: center;">
-        <p class="mb-0"><strong>*** Esta página es solo para personal administrativo, los cambios que aquí se realicen no podrán ser revertidos ***
-        </strong></p>
-
-        <p class="mb-0"><strong>*** Su identificación será guardada en un historial de modificaciones realizadas por concepto de delegación de responsabilidades ***</strong></p>
-    </div><br>
-
-  <main id="main">
-
-    <form method="get" action="configArt.php">
-
-
-        <div class="container">
-          <div class="row align-items-stretch">
-            <div class="col-md-8" data-aos="fade-up"><br><br><br>
-
-               <div class="input-group">
-                  <div class="custom-file">
-                    <input type="file" class="custom-file-input" name="foto" id="imagen" required>
-                    <label class="custom-file-label" for="imagen">Seleccionar imagen...</label>
-
-                  </div>
-                </div>
-                  <img src="img/sin_foto.jpg" id="imagenmuestra"> 
-
-
-            </div>
-
-            <div class="col-md-3 ml-auto" data-aos="fade-up" data-aos-delay="100">
-              <div class="sticky-content"><br>
-
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Marca:</span>
           </div>
-          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="marca" id="marca" placeholder="texto..." required>
-        </div>
-
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Categoría:</span>
-          </div>
-          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="categoria" id="categoria" placeholder="texto..." required>
-        </div>
-
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Descripción: </span>
-          </div>
-          <textarea style="margin-top: 0px; margin-bottom: 0px; height: 326px;" class="form-control" autocomplete="off" name="descripcion" id="descripcion" placeholder="texto..." required></textarea>
-        </div>
-        
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Precio: </span>
-            <span class="input-group-text">₡</span>
-          </div>
-          <input type="text" class="form-control" autocomplete="off" name="precio" id="precio"  placeholder="número..." required>
-        </div>
-
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Existencias:</span>
-          </div>
-          <input type="text" class="form-control" autocomplete="off" aria-describedby="basic-addon1" name="existencias" id="existencias" placeholder="número..." required>
-        </div>
-        
-        <div class="input-group input-group-sm mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroup-sizing-sm">Fecha Modificación:</span>
-          </div>
-          <input type="text" class="form-control" autocomplete="off" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" readonly="true" name="fechaMod" id="fechaMod" value="<?php echo date('Y') . '-' . date('m') . '-' . date('d') ?>">
-        </div>
-
-        <div class="input-group input-group-sm mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroup-sizing-sm">ID administrador:</span>
-          </div>
-          <input type="text" class="form-control" autocomplete="off" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" readonly="true" name="cedAdmin" id="cedAdmin" value="">
-        </div>
-
-              </div>
-            </div>
-          </div>
-        </div><br>
-          
-          <div class="container" style="text-align: center;">
-           <input class="btn btn-outline-primary btn-lg" type="submit" value="Guardar cambios">
-          </div><br>
 
     </form>
 
@@ -248,20 +202,26 @@
 
 <?php else: ?>
 
+  <nav class="navbar navbar-light custom-navbar">
+    <div class="container">
+      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | ERROR AL CARGAR EL CONTENIDO</a>
+    </div>
+  </nav><br><br>
+
   <div class="container">
     
-    <br><br><br><br><br><hr>
+    <br><br><br><hr>
     <br>
-    <h1 style="color: red; text-align: center;">No se ha logrado establecer el artículo a modificar, regrese y vuelva a seleccionar el artículo...</h1>
-    <br>
+    <h1 style="color: red; text-align: center;">Actualmente no cuentas con los credenciales para modificar articulos, inicia sesión primero...</h1>
+    <br><br><br><br><br><br>
     <a href="index.php" class="btn-lg btn-block btn btn-outline-secondary">Regresar a Pantalla de Inicio</a>
-    <hr><br><br><br><br><br>
+    <hr>
 
   </div>
   
 <?php endif; ?>
-  
-  <br><br>
+
+  <br><br><br>
   <footer class="footer" role="contentinfo">
     <div class="container">
       <div class="row">
@@ -314,8 +274,7 @@
     $("#imagen").change(function() {
       readURL(this);
     });
-    </script>
-
+  </script>
 </body>
 
 </html>

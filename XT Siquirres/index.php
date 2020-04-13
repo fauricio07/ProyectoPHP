@@ -32,6 +32,7 @@
   <?php
     require_once 'inclusiones.php';
     $clsArt = new clsArticulos();
+
   ?>
   
 </head>
@@ -74,6 +75,14 @@
 
   <main id="main">
 
+<?php if(isset($_GET['delete']) && !empty($_GET['delete'])): ?>
+
+    <div class="alert alert-warning" role="alert" style="text-align: center;">
+      <h4 class="alert-heading">¡¡¡ARTICULO ELIMINADO!!!</h4>
+      <p>se ha eliminado un artículo</p>
+    </div>
+<?php endif; ?>
+
     <div class="site-section site-portfolio">
       <div class="container">
         <div class="row mb-5 align-items-center">
@@ -100,6 +109,21 @@
 <?php endforeach; ?>
 
         </div>
+
+  <?php if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
+
+            <div class="container" style="text-align: center;">
+                
+                <br><br><br>
+                <h4 class="h2 mb-3">Mantenimiento de artículos</h4><br>
+                <p>
+                  <a href="configArt.php" class="btn btn-outline-success btn-lg">Nuevo Artículo</a>
+                </p>
+              
+            </div>
+
+  <?php endif; ?>
+
       </div>
     </div>
 

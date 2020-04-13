@@ -30,7 +30,7 @@ class clsUsuarios extends clsConexion
         $resultado = $this->baseDatos->query($consulta);
         if(1 == $resultado->num_rows) {
             $cuenta = $resultado->fetch_object();
-            $_SESSION['cuenta'] = $cuenta;
+            $_SESSION['sesion'] = $cuenta;
 
             return TRUE;
         }
@@ -46,8 +46,8 @@ class clsUsuarios extends clsConexion
             return FALSE;
         }
 
-        if(!empty($_SESSION['cuenta'])) {
-            $this->cuenta = $_SESSION['cuenta'];
+        if(!empty($_SESSION['sesion'])) {
+            $this->cuenta = $_SESSION['sesion'];
             return FALSE;
         }
         return TRUE;
@@ -57,7 +57,7 @@ class clsUsuarios extends clsConexion
      *
      */
     public function cerrarSesion(): void {
-        unset($_SESSION['cuenta']);
+        unset($_SESSION['sesion']);
     }
 
     /*

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>ExtremeTech Siquirres | Detalles</title>
+  <title>ExtremeTech Siquirres | Eliminación Artículo</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta content="" name="keywords">
   <meta content="" name="description">
@@ -29,9 +29,15 @@
 
   <?php    
   require_once 'inclusiones.php';
+  $clsArtcls = new clsArticulos($_REQUEST);
 
-  $_SESSION['sesion'] = true;
-  //unset($_SESSION['sesion']);
+  if(!empty($_POST['codigo']) && isset($_POST)) {
+
+  	if($clsArtcls->eliminarArt($_POST['codigo'])){
+
+	header('Location: index.php?delete=si');	
+  	}
+  }
 
   //Mientras el request no este vacío
   if(!empty($_GET['codigo'])) {
@@ -39,7 +45,6 @@
       /*
        * @var clsArticulos $clsArtcls
        */
-      $clsArtcls = new clsArticulos($_REQUEST);
       $articulo = $clsArtcls->buscarArtPorCod();
   }
   ?>
@@ -49,34 +54,11 @@
 <body>
 
 
-  <div class="collapse navbar-collapse custom-navmenu" id="main-navbar">
-    <div class="container py-2 py-md-5">
-      <div class="row align-items-start">
-        <div class="col-md-2">
-          <ul class="custom-menu">
-            <li><a href="index.php">Página de Inicio</a></li>
-            <br>
-            <li><a href="login.php">Iniciar Sesión</a></li>
-          </ul>
-  </div>
-    <div class="col-md-6 d-none d-md-block  mr-auto">
-      <div>
-        <p><em>"El diseño es el alma de todo lo creado por el hombre"</em><br><a>Steve Jobs</a></p>
-      </div>
-    </div>
-  <div class="col-md-4 d-none d-md-block">
-      <p><em>"Tus clientes más insatisfechos son tu mayor fuente de aprendizaje"</em><br><a>Bill Gates</a></p>
-  </div>
-      </div>
-
-    </div>
-  </div>
-
 <?php if(isset($articulo)): ?>
 
   <nav class="navbar navbar-light custom-navbar">
     <div class="container">
-      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | DETALLES</a>
+      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | ELIMINAR ARTICULO</a>
 
       <a class="burger" data-toggle="collapse" data-target="#main-navbar">
         <span></span>
@@ -85,19 +67,17 @@
     </div>
   </nav>
 
+  <?php if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
+
+<form action="eliminar.php" method="POST">
   <main id="main">
 
     <div class="site-section">
-      <div class="container">
-        <div class="row mb-4 align-items-center">
-          <div class="col-md-12 col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
-            <h2>Información a detalle del artículo</h2>
-            <p class="mb-0">Visite nuestra tienda oficial ubicada en Siquirres, Limón, Costa Rica.</p>
-          </div>
 
-
-        </div>
-      </div>
+	<div class="container" style="background-color: yellow; color: black; text-align: center;">
+        <p class="mb-0"><strong>*** Esta página es solo para personal administrativo, los cambios que aquí se realicen no podrán ser revertidos ***
+        </strong></p>
+    </div>
 
       <div class="site-section pb-0">
         <div class="container">
@@ -105,44 +85,42 @@
             <div class="col-md-8" data-aos="fade-up">
               <img src="<?php echo$articulo->Foto; ?>" alt="Image" class="img-fluid">
             </div>
+            <input type="hidden" name="codigo" value="<?php echo $articulo->Codigo; ?>">
             <div class="col-md-3 ml-auto" data-aos="fade-up" data-aos-delay="100">
-              <div class="sticky-content"><br><br><br>
-                <h3 class="h3"><?php echo $articulo->Marca; ?></h3>
+              <div class="sticky-content">
+                <br><br><h3 class="h3"><?php echo $articulo->Marca; ?></h3>
                 <p class="mb-4"><span class="text-muted"><?php echo $articulo->Categoria; ?></span></p>
 
                 <div class="mb-5">
-                  <p><?php echo $articulo->Descripcion; ?></p>
+                  <p><strong>Descripción: </strong><?php echo $articulo->Descripcion; ?></p>
                 </div>
 
                 <ul class="list-unstyled list-line mb-5">
                   <li><strong>Existencias: </strong><?php echo $articulo->Existencias; ?></li>
                   <li><strong>Precio: </strong>₡<?php echo $articulo->Precio; ?></li>
+                  <li><strong>Última modificación: </strong><?php echo $articulo->Fecha_Modificacion; ?></li>
+                  <li><strong>Último usuario editor: </strong><?php echo $articulo->Ced_UsuarioModificador; ?></li>
                 </ul>
 
               </div>
             </div>
 
-  <?php if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
-
             <div class="container" style="text-align: center;">
                 
                 <br><br><br>
-                <h4 class="h2 mb-3">Mantenimiento de artículos</h4><br>
-                <p>
-                  <a href="configArt.php?codigo=<?php echo $articulo->Codigo; ?>" class="btn btn-outline-warning btn-lg">Modificar</a>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <a href="eliminar.php?codigo=<?php echo $articulo->Codigo; ?>" class="btn btn-outline-danger btn-lg">Eliminar</a>
-                </p>
+                <h4 class="h2 mb-3">¿Desea continuar con la eliminación de este artículo?</h4><br>
+           		<input class="btn btn-outline-danger btn-lg" type="submit" value="CONFIRMAR">
               
             </div>
-
-  <?php endif; ?>
 
           </div>
         </div>
       </div>
 
   </main>
+</form>
+
+  <?php endif; ?>
 
 
 
@@ -158,7 +136,7 @@
     
     <br><br><br><hr>
     <br>
-    <h1 style="color: red; text-align: center;">No se ha logrado establecer el artículo a buscar, regrese y vuelva a seleccionar el artículo...</h1> 
+    <h1 style="color: red; text-align: center;">No se ha logrado establecer el artículo a eliminar, regrese y vuelva a seleccionar el artículo...</h1> 
     <br><br><br><br><br><br>
     <a href="index.php" class="btn-lg btn-block btn btn-outline-secondary">Regresar a Pantalla de Inicio</a>
     <hr><br><br><br>
