@@ -17,7 +17,7 @@ class clsUsuarios extends clsConexion
      */
     public function __construct($solicitud = []) {
         parent::__construct($solicitud);
-        $this->isAnonymous();
+        $this->usuarioAnonimo();
     }
 
     /*
@@ -30,6 +30,7 @@ class clsUsuarios extends clsConexion
         $resultado = $this->baseDatos->query($consulta);
         if(1 == $resultado->num_rows) {
             $cuenta = $resultado->fetch_object();
+            $cuenta->Cedula = $this->solicitud['cedula'];
             $_SESSION['sesion'] = $cuenta;
 
             return TRUE;
@@ -40,17 +41,12 @@ class clsUsuarios extends clsConexion
     /*
      * @return bool
      */
-    public function sesionInciada(): bool {
+    public function usuarioAnonimo(): bool {
         
-        if(!is_null($this->cuenta)) {
-            return FALSE;
+        if(empty($_SESSION['sesion'])) {
+            return True;
         }
-
-        if(!empty($_SESSION['sesion'])) {
-            $this->cuenta = $_SESSION['sesion'];
-            return FALSE;
-        }
-        return TRUE;
+        return False;
     }
 
     /*
@@ -63,7 +59,7 @@ class clsUsuarios extends clsConexion
     /*
      * @return string
      */
-    public function verCredenciales(): string {
+    public function verUsuario(): string {
         return $this->cuenta->Nombre_Completo;
     }
 

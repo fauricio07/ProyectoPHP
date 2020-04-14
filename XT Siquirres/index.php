@@ -32,6 +32,7 @@
   <?php
     require_once 'inclusiones.php';
     $clsArt = new clsArticulos();
+    $clsUsu = new clsUsuarios();
 
   ?>
   
@@ -110,7 +111,7 @@
 
         </div>
 
-  <?php if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
+  <?php if(!$clsUsu->usuarioAnonimo()): ?>
 
             <div class="container" style="text-align: center;">
                 

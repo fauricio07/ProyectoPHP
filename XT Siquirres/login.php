@@ -27,6 +27,31 @@
   <!-- Template Main CSS File -->
   <link href="css/style.css" rel="stylesheet">
 
+<?php
+require_once 'inclusiones.php';
+
+
+$usuario = new clsUsuarios($_POST);
+
+if(!$usuario->usuarioAnonimo()){
+
+  header('Location: /XT_Siquirres/logout.php');
+}
+
+if('POST' == $_SERVER['REQUEST_METHOD']) {
+  
+    $msj = null;
+    if($usuario->iniciarSesion()) {
+        header('Location: /XT_Siquirres/index.php');
+    }
+    else 
+    {
+        $msj = '¡¡¡Las credenciales ingresadas no corresponden a niguna cuenta existente!!!';
+    }
+}
+
+?>
+
 </head>
 
 <body>
@@ -64,61 +89,49 @@
     </div>
   </nav>
 
-
-
-
   <main id="main">
 
     <div class="site-section pb-0 site-portfolio">
-      <div class="container">
-        <div class="row mb-5 align-items-end">
-          <div class="col-md-6" data-aos="fade-up">
+      <div class="container" style="text-align: center;">         
 
-            <h2 style="text-align: center;">INICIO DE SESIÓN</h2>
-            <p  style="text-align: center;" class="mb-0">Ingrese las credenciales correspondientes a su cuenta de administrador asignada</p>
-          </div>
+        <h2 class="h2">CREDENCIALES</h2>
+        <p><strong>** Ingrese las credenciales correspondientes a su cuenta de administrador asignada **</strong></p>
 
+      <?php if(!empty($msj)): ?>
+        <div class="alert alert-danger" role="alert">
+          <?php echo $msj; ?>
         </div>
+      <?php endif; ?>
 
-        <?php
+      <?php if(!empty($_GET['out'])): ?>
+        <div class="alert alert-info" role="alert">
+          <?php echo "¡Sesión cerrada correctamente!"; ?>
+        </div>
+      <?php endif; ?>
+        <hr>
 
-        $Id =  NULL;
-        $Contra =  NULL;
+        <div class="row align-items-stretch" style="justify-content:center">          
 
-        if('POST' == $_SERVER['REQUEST_METHOD']){
+            <div class="col-md-6 aos-init aos-animate">
+              <form action="login.php" method="POST" >
 
-          var_dump("Hizo post");
-          include 'crud.php';
-          $clsUsuario = new usuarios();
-          $clsUsuario->cargarDatos($_POST);
-          list($Id, $Contra) = $clsUsuario->validar();
-          //<?php echo $_SERVER['REQUEST_URI'] 
-        }
-        ?>
+                <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese aquí una cédula válida de 9 dígitos numéricos..." required autocomplete="off"><br>
+                <input type="text" class="form-control" id="contraseña" name="contraseña" placeholder="Ingrese aquí la contraseña válida..." required autocomplete="off"><br>
+                <input type="submit" value="Ingresar" class="btn btn-block btn-outline-info">
+                <hr>
 
+              </form>
+            </div>
 
-        <div class="row">
-          <form action="admin.php" method="POST" >
-
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="cedula" >Identificación: </label>
-           <input type="text" name="cedula"> 
-           <br/>
-
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="contraseña" >Contraseña: </label>
-           <input type="text" name="contraseña">
-           <br/>
-
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Ingresar">
-
-          </form>
         </div>
 
       </div>
     </div>
 
   </main>
+
   <footer class="footer mt-5 pt-5" role="contentinfo">
-    <div class="container">
+    <div class="container"><br><br>
       <div class="row">
         <div class="col-sm-6">
           <p class="mb-1">&copy; Copyright ExtremeTech Siquirres. All Rights Reserved</p>

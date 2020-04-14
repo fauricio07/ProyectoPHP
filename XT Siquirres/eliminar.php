@@ -29,13 +29,20 @@
 
   <?php    
   require_once 'inclusiones.php';
+  $clsUsu = new clsUsuarios();
+
+  if($clsUsu->usuarioAnonimo()){
+  header('Location: /XT_Siquirres/index.php');  
+  }
+
+
   $clsArtcls = new clsArticulos($_REQUEST);
 
   if(!empty($_POST['codigo']) && isset($_POST)) {
 
   	if($clsArtcls->eliminarArt($_POST['codigo'])){
 
-	header('Location: index.php?delete=si');	
+  	header('Location: /XT_Siquirres/index.php?delete=si');	
   	}
   }
 
@@ -66,8 +73,6 @@
 
     </div>
   </nav>
-
-  <?php if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
 
 <form action="eliminar.php" method="POST">
   <main id="main">
@@ -119,10 +124,6 @@
 
   </main>
 </form>
-
-  <?php endif; ?>
-
-
 
 <?php else: ?>
 

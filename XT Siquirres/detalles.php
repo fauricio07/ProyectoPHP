@@ -29,9 +29,7 @@
 
   <?php    
   require_once 'inclusiones.php';
-
-  $_SESSION['sesion'] = true;
-  //unset($_SESSION['sesion']);
+  $clsUsu = new clsUsuarios();
 
   //Mientras el request no este vacío
   if(!empty($_GET['codigo'])) {
@@ -122,7 +120,7 @@
               </div>
             </div>
 
-  <?php if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true): ?>
+  <?php if(!$clsUsu->usuarioAnonimo()): ?>
 
             <div class="container" style="text-align: center;">
                 

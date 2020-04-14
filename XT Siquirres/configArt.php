@@ -31,8 +31,10 @@
   require_once 'inclusiones.php';
   date_default_timezone_set('America/Costa_Rica');
 
+  $clsUsu = new clsUsuarios();
+
 //Mientras se encuentre iniciada una sesión
-if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true){
+if(!$clsUsu->usuarioAnonimo()){
 
       /*
        * @var clsArticulos $clsArtcls
@@ -61,6 +63,8 @@ if(isset($_SESSION['sesion']) && $_SESSION['sesion'] == true){
       $modificado = $clsArtcls->modificarArt($nuevaDIR);
       $articulo = $clsArtcls->buscarArtPorCod();
     }
+  } else {
+        header('Location: /XT_Siquirres/index.php');
   }
   ?>
 
