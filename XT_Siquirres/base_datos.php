@@ -17,7 +17,7 @@ abstract class clsConexion
      * @param vector $solicitud
      */
     public function __construct($solicitud = []) {
-        $this->baseDatos = new mysqli('database', 'lamp', 'lamp', 'ExtremeTech_Siquirres');
+        $this->baseDatos = new mysqli('database', 'lamp', 'lamp', 'lamp');
         $this->solicitud = $solicitud;
         $this->init();
     }

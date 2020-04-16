@@ -1,0 +1,4 @@
+1. Hacer las respectivas validaciones al insertar y modificar (Usuarios | Artículos).
+2. Conectar los diferentes formularios (páginas) con botones y links.
+3. Agregar iconos (Home, Login, Logout, Settings, Return) a los <nav>.
+4. Probar página para detectar fallos.
