@@ -9,7 +9,7 @@
   <meta content="" name="description">
 
   <!-- Favicons -->
-  <link href="img/XT Siquirres_opt.png" rel="icon">
+  <link href="img/Iconos/XT Siquirres.png" rel="icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700|Raleway:400,700&display=swap"
@@ -43,8 +43,17 @@
   }
 ;
   if (isset($_GET['update'])) {
-    if ($_GET['update'] == 0 || $_GET['update'] == 1) {
+
+    if ($_GET['update'] == 1 /*|| $_GET['update'] == 0*/) {
+
+      $msjTitulo = 'PERFIL MODIFICADO';
+      $clase = 'alert alert-warning';
       $msj1 = '¡Se ha actualizado un perfil correctamente!';
+    } elseif($_GET['update'] == 'False') {
+
+      $msjTitulo = 'PERFIL NO MODIFICADO';
+      $clase = 'alert alert-danger';
+      $msj1 = '¡Se ha presentado un error al tratar de modificar el perfil!';
     }
   } elseif(isset($_POST['cedula'])){
     if($clsUsu->eliminarUsu($_POST['cedula'])){
@@ -64,7 +73,18 @@
 
   <nav class="navbar navbar-light custom-navbar">
     <div class="container">
-      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | DETALLES DE USUARIOS</a>
+      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | DETALLES DE USUARIOS</a>      
+        <div class="row text-md-right">
+
+          <a class="btn btn-outline-light" href="/index.php" style="text-decoration: none; text-align: center; font-size: smaller;">
+            <img src="img/Iconos/Inicio.png"><br>INICIO
+          </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+
+          <a class="btn btn-outline-light" href="login.php" style="text-decoration: none; text-align: center; font-size: smaller;">
+            <img src="img/Iconos/Logout.png"><br>CERRAR SESION
+          </a>
+
+      </div>
     </div>
   </nav><hr><br><br>
 
@@ -73,8 +93,8 @@
 
 <?php if(isset($msj1)): ?>
 
-    <div class="alert alert-warning" role="alert" style="text-align: center;">
-      <h4 class="alert-heading">PERFIL ACTUALIZADO</h4>
+    <div class="<?php echo $clase; ?>" role="alert" style="text-align: center;">
+      <h4 class="alert-heading"><?php echo $msjTitulo; ?></h4>
       <p><?php echo $msj1; ?></p>
     </div>
 
@@ -108,7 +128,7 @@
         <tr>
             <th scope="row"><?php echo $numUsuario += 1; ?><input type="hidden" name="cedula" value="<?php echo $usuario->Cedula; ?>"></th>
             <td><?php echo $usuario->Nombre_Completo; ?></td>
-            <td><img style="width: 40px; height: 40px;" src="<?php echo $usuario->Foto; ?>"></td>
+            <td><img class="rounded" style="width: 40px; height: 40px;" src="<?php echo $usuario->Foto; ?>"></td>
             <td><?php echo $usuario->Descripcion; ?></td>
             <td><?php echo $usuario->Fecha_Creacion; ?></td>
             <td><?php echo $usuario->Fecha_Modificacion; ?></td>

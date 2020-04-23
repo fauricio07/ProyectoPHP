@@ -11,6 +11,9 @@ class clsUsuarios extends clsConexion
     /* @var  */
     protected $cuenta;
 
+    /* @array */
+    public $validaciones = [];
+
     /*
      * constructor clsUsuarios.
      * @param arreglo $solicitud
@@ -92,15 +95,21 @@ class clsUsuarios extends clsConexion
      */
     public function insertarUsu($url): string {
 
-        $contraseña = md5($this->solicitud['contraseña']);
-        $consulta = 'INSERT INTO Usuarios (Cedula, Nombre_Completo, Foto, Correo, Contraseña, Descripcion, Fecha_Creacion, Fecha_Modificacion, Ced_UsuarioCreador) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        $stament = $this->baseDatos->prepare($consulta);
-        $stament->bind_param('isssssssi', $this->solicitud['cedIns'], $this->solicitud['nombre'], $url, $this->solicitud['correo'], $contraseña, $this->solicitud['descripcion'], $this->solicitud['fechaCre'], $this->solicitud['fechaMod'], $this->solicitud['cedAdmin']);
+        if($this->validarDatos()){
 
-        $stament->execute();
-        $stament->close();
+            $contraseña = md5($this->solicitud['contraseña']);
+            $consulta = 'INSERT INTO Usuarios (Cedula, Nombre_Completo, Foto, Correo, Contraseña, Descripcion, Fecha_Creacion, Fecha_Modificacion, Ced_UsuarioCreador) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            $stament = $this->baseDatos->prepare($consulta);
+            $stament->bind_param('isssssssi', $this->solicitud['cedIns'], $this->solicitud['nombre'], $url, $this->solicitud['correo'], $contraseña, $this->solicitud['descripcion'], $this->solicitud['fechaCre'], $this->solicitud['fechaMod'], $this->solicitud['cedAdmin']);
 
-        return $this->baseDatos->affected_rows;
+            $stament->execute();
+            $stament->close();
+            
+            return 1;
+        } else {
+
+            return 0;
+        }
     }
 
     /*
@@ -109,15 +118,16 @@ class clsUsuarios extends clsConexion
      */
     public function modificarUsu($url) {
 
-        if(!empty($this->solicitud['cedMod']) && !empty($this->solicitud['nombre']) && !empty($this->solicitud['correo']) && !empty($this->solicitud['contraseña']) && !empty($this->solicitud['descripcion']) && !empty($this->solicitud['fechaCre']) && !empty($url) && !empty($this->solicitud['fechaMod']) && !empty($this->solicitud['cedAdmin'])) {
+        if($this->validarDatos()) {
 
         $contraseña = md5($this->solicitud['contraseña']);
         $consulta = "UPDATE Usuarios SET Nombre_Completo = '{$this->solicitud['nombre']}', Foto = '{$url}', Correo = '{$this->solicitud['correo']}', Contraseña = '{$contraseña}', Descripcion = '{$this->solicitud['descripcion']}', Fecha_Creacion = '{$this->solicitud['fechaCre']}', Fecha_Modificacion = '{$this->solicitud['fechaMod']}', Ced_UsuarioCreador = '{$this->solicitud['cedAdmin']}' WHERE Cedula = {$this->solicitud['cedMod']}";
           $this->baseDatos->query($consulta);
 
-          return $this->baseDatos->affected_rows;
+          //$this->baseDatos->affected_rows
+          return 1;
         }
-        return False;
+        return 'False';
     }
 
     /*
@@ -128,5 +138,44 @@ class clsUsuarios extends clsConexion
         return $this->baseDatos->query("DELETE FROM Usuarios WHERE Cedula = {$cedula}");
     }
 
+    /*    
+     * @return bool
+     */
+    public function validarDatos(): bool {
+
+        $this->validaciones = $this->solicitud;
+        $esValido = True;
+
+        if(isset($this->solicitud['cedIns'])) {
+
+            if(empty($this->solicitud['cedIns']) || !is_numeric((int) $this->solicitud['cedIns']) || strlen($this->solicitud['cedIns']) != 9 || preg_match('/[\s\t]+/' , $this->solicitud['cedIns']) != 0){
+
+                $esValido = False;
+                $this->validaciones['cedIns'] = $esValido;
+            }
+        }
+        if(empty($this->solicitud['nombre'])) {
+
+                $esValido = False;
+                $this->validaciones['nombre'] = $esValido;
+        }
+        if(empty($this->solicitud['correo']) || !filter_var($this->solicitud['correo'], FILTER_VALIDATE_EMAIL) || preg_match('/[\s\t]+/' , $this->solicitud['correo']) != 0) {
+                
+                $esValido = False;
+                $this->validaciones['correo'] = $esValido;
+        }
+        if(empty($this->solicitud['contraseña']) || preg_match('/\s/' , $this->solicitud['contraseña']) != 0) {
+
+                $esValido = False;
+                $this->validaciones['contraseña'] = $esValido;
+        }
+        if(empty(trim($this->solicitud['descripcion']))) {
+
+                $esValido = False;           
+                $this->validaciones['descripcion'] = $esValido; 
+        }
+
+        return $esValido;
+    }
 
 }

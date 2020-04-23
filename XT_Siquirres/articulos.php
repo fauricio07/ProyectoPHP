@@ -75,8 +75,7 @@ class clsArticulos extends clsConexion
      */
     public function __destruct() {
         $this->baseDatos->close();
-    }
-    
+    }   
 }
 
 ?>

@@ -10,7 +10,7 @@
   <meta content="" name="description">
 
   <!-- Favicons -->
-  <link href="img/XT Siquirres_opt.png" rel="icon">
+  <link href="img/Iconos/XT Siquirres.png" rel="icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700|Raleway:400,700&display=swap"
@@ -41,12 +41,32 @@
   
 </head>
 
-
 <body>
 
   <nav class="navbar navbar-light custom-navbar">
     <div class="container">
       <a class="navbar-brand">EXTREME-TECH SIQUIRRES | PÁGINA DE INICIO</a>
+        <div class="row text-md-right">
+          
+<?php if(!$clsUsu->usuarioAnonimo()): ?>
+
+          <a class="btn btn-outline-light" href="detallesUsu.php" style="text-decoration: none; text-align: center; font-size: smaller;">
+            <img src="img/Iconos/Config.png"><br>MATENIMIENTO DE<br>USUARIOS
+          </a>&nbsp;|&nbsp;
+
+          <a class="btn btn-outline-light" href="login.php" style="text-decoration: none; text-align: center; font-size: smaller;">
+            <img src="img/Iconos/Logout.png"><br>CERRAR SESION
+          </a>
+
+<?php else: ?>
+
+          <a class="btn btn-outline-light" href="login.php" style="text-decoration: none; text-align: center; font-size: smaller;">
+            <img src="img/Iconos/Login.png"><br>INICIAR SESION
+          </a>
+
+<?php endif; ?>
+
+      </div>      
     </div>
   </nav><hr>
 

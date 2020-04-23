@@ -9,7 +9,7 @@
   <meta content="" name="description">
 
   <!-- Favicons -->
-  <link href="img/XT Siquirres_opt.png" rel="icon">
+  <link href="img/Iconos/XT Siquirres.png" rel="icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700|Raleway:400,700&display=swap"
@@ -41,23 +41,27 @@
     header('Location: /index.php');
   }
 
-  if (!empty($_POST['nombre']) && !empty($_POST['correo']) && !empty($_POST['contraseña']) && !empty($_POST['descripcion']) && !empty($_POST['fechaCre']) && !empty($_POST['fechaMod']) && !empty($_POST['cedAdmin'])) {
-
+  if(isset($_POST) && !empty($_POST)) {
 
     if(!empty($_FILES['foto']['name'])){
 
       $nuevaDIR = 'img' . DIRECTORY_SEPARATOR . 'usuarios' . DIRECTORY_SEPARATOR . $_FILES['foto']['name'];
-      move_uploaded_file($_FILES['foto']['tmp_name'], __DIR__ . DIRECTORY_SEPARATOR . $nuevaDIR);
+      if($clsUsu->validarDatos()){
+        move_uploaded_file($_FILES['foto']['tmp_name'], __DIR__ . DIRECTORY_SEPARATOR . $nuevaDIR);
+      }
     } else {
       $nuevaDIR = $_POST['urlFoto'];
     }
 
-    if(isset($_POST['cedMod'])){
+    if(isset($_POST['cedMod'])) {
+        
       $modifico = $clsUsu->modificarUsu($nuevaDIR);
       header('Location: /detallesUsu.php?update=' . $modifico);
-    } else {
+    } elseif(isset($_POST['cedIns'])) {
+
+      $cargaError = $_POST;
       $inserto = $clsUsu->insertarUsu($nuevaDIR);
-    }    
+    } 
   }
 
   if(!empty($_GET['cedula'])) {
@@ -72,18 +76,40 @@
 
   <nav class="navbar navbar-light custom-navbar">
     <div class="container">
-      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | CONFIGURAR USUARIO</a>
+      <a class="navbar-brand">EXTREME-TECH SIQUIRRES | CONFIGURAR USUARIO</a>      
+        <div class="row text-md-right">
+
+          <a class="btn btn-outline-light" href="/index.php" style="text-decoration: none; text-align: center; font-size: smaller;">
+            <img src="img/Iconos/Inicio.png"><br>INICIO
+          </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+
+          <a class="btn btn-outline-light" href="detallesUsu.php" style="text-decoration: none; text-align: center; font-size: smaller;">
+            <img src="img/Iconos/Config.png"><br>MATENIMIENTO DE<br>USUARIOS
+          </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+
+          <a class="btn btn-outline-light" href="login.php" style="text-decoration: none; text-align: center; font-size: smaller;">
+            <img src="img/Iconos/Logout.png"><br>CERRAR SESION
+          </a>
+
+      </div>
     </div>
   </nav><hr><br><br>
 
 <?php if(isset($inserto) && $inserto == 1): ?>
 
-    <div class="alert alert-warning" role="alert" style="text-align: center;">
+    <div class="alert alert-success" role="alert" style="text-align: center;">
       <h4 class="alert-heading">PERFIL INSERTADO</h4>
       <p>¡Se ha insertado un nuevo perfil con éxito!</p>
       <a href="detallesUsu.php" class="btn btn-success">Ver los Perfiles</a>
     </div>
 
+<?php elseif(isset($inserto) && $inserto == 0): ?>
+
+    <div class="alert alert-danger" role="alert" style="text-align: center;">
+      <h4 class="alert-heading">PERFIL NO INSERTADO</h4>
+      <p>¡Se ha presentado un error al tratar de insertar el nuevo perfil!</p>
+    </div>
+    
 <?php endif; ?>
 
 <div class="container">
@@ -93,10 +119,11 @@
 
             <div class="col-md-6">
 
-              <div class="container" style="text-align: center;">
-                <br><br>
+              <div class="container" style="text-align: center;"><br><br>
+                
                 <?php if(isset($cuenta)): ?>
 
+                <!-- Se carga desde BD la cédula del usuario a modificar pero no se muestra --> 
                 <input type="hidden" class="form-control" style="text-align: center;" name="cedMod" value="<?php echo $cuenta->Cedula; ?>" readonly><br>
 
                 <!-- Envía el url guardado en la BD por si el usuario no la actualiza --> 
@@ -115,8 +142,17 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text">Cédula: </span>
                   </div>
-                    <input type="text" class="form-control" autocomplete="off" name="cedIns" required>
-                </div><br>
+                    <input type="text" class="form-control" autocomplete="off" name="cedIns" value="<?php echo isset($cargaError) && $inserto == 0? trim($cargaError['cedIns']) : null ; ?>" required>
+                </div>
+
+                <!-- Si no se ingresa una identificación numérica de 9 valores sin espacios -->
+                <?php if(isset($clsUsu->validaciones['cedIns']) && $clsUsu->validaciones['cedIns'] == False): ?>
+
+                    <div class="alert alert-warning" role="alert" style="text-align: center;">
+                      <p>**Debe ingresar una cédula de 9 valores numéricos sin espacios**</p>
+                    </div>
+
+                <?php endif; ?><br>
 
                 <div class="input-group">
                   <div class="custom-file">   
@@ -126,11 +162,12 @@
                 </div>
 
                 <?php endif; ?>
+
               </div>
 
-                <div class="container" style="text-align: center;">
-                  <br><img src="<?php echo isset($cuenta)? $cuenta->Foto : null ; ?>" style="width: 62%;" id="imagenmuestra"> 
-                </div>
+              <div class="container" style="text-align: center;">
+                <br><img class="rounded" src="<?php echo isset($cuenta)? $cuenta->Foto : null ; ?>" style="width: 62%;" id="imagenmuestra"> 
+              </div>
                 
             </div>
 
@@ -140,33 +177,69 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text">Nombre Completo: </span>
                 </div>
-                  <input type="text" class="form-control" autocomplete="off" name="nombre" value="<?php echo isset($cuenta)? $cuenta->Nombre_Completo : null ; ?>" required>
+                  <input type="text" class="form-control" autocomplete="off" name="nombre" value="<?php echo (isset($cuenta)? $cuenta->Nombre_Completo : (isset($cargaError) && $inserto == 0? trim($cargaError['nombre']) : null )); ?>" required>
               </div>
+
+              <!-- Si no se ingresa un nombre que no contenga valores numéricos -->
+              <?php if(isset($clsUsu->validaciones['nombre']) && $clsUsu->validaciones['nombre'] == False): ?>
+
+                  <div class="alert alert-warning" role="alert" style="text-align: center;">
+                    <p>**El nombre no debe contener valores numéricos**</p>
+                  </div>
+
+              <?php endif; ?>
 
               <div class="input-group mb-3">      
                 <div class="input-group-prepend">
                   <span class="input-group-text">Correo: </span>
                 </div>
-                  <input type="text" class="form-control" autocomplete="off" name="correo" value="<?php echo isset($cuenta)? $cuenta->Correo : null ; ?>" required>
+                  <input type="text" class="form-control" autocomplete="off" name="correo" value="<?php echo (isset($cuenta)? $cuenta->Correo : (isset($cargaError) && $inserto == 0? trim($cargaError['correo']) : null )); ?>" required>
                 <div class="input-group-append">
-                  <span class="input-group-text" id="basic-addon2">@example.com</span>
+                  <span class="input-group-text" style="color: green;" id="basic-addon2">ejemplo@ejemplo.com</span>
                 </div>
               </div>
+
+              <!-- Si no se ingresa un correo con un formato correcto -->
+              <?php if(isset($clsUsu->validaciones['correo']) && $clsUsu->validaciones['correo'] == False): ?>
+
+                  <div class="alert alert-warning" role="alert" style="text-align: center;">
+                    <p>**El correo debe contener un formato correcto**</p>
+                  </div>
+
+              <?php endif; ?>
 
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">Contraseña: </span>
                 </div>
-                  <input type="text" class="form-control" autocomplete="off" name="contraseña" required>
+                  <input type="text" class="form-control" autocomplete="off" name="contraseña" value="<?php echo isset($cargaError) && $inserto == 0? trim($cargaError['contraseña']) : null ; ?>" required>
               </div>
+
+              <!-- Si no se ingresa una contraseña sin espacios -->
+              <?php if(isset($clsUsu->validaciones['contraseña']) && $clsUsu->validaciones['contraseña'] == False): ?>
+
+                  <div class="alert alert-warning" role="alert" style="text-align: center;">
+                    <p>**La contraseña no debe contener espacios**</p>
+                  </div>
+
+              <?php endif; ?>
 
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">Descripción: </span>
                 </div>
-                  <textarea style="max-height: 200px; height: 200px; min-height: 200px;" class="form-control" autocomplete="off" name="descripcion" required><?php echo isset($cuenta)? $cuenta->Descripcion : null ; ?></textarea>
+                  <textarea style="max-height: 200px; height: 200px; min-height: 200px;" class="form-control" autocomplete="off" name="descripcion" required><?php echo (isset($cuenta)? $cuenta->Descripcion : (isset($cargaError) && $inserto == 0? trim($cargaError['descripcion']) : null )); ?></textarea>
               </div>
                   
+              <!-- Si no se ingresa una descripción -->
+              <?php if(isset($clsUsu->validaciones['descripcion']) && $clsUsu->validaciones['descripcion'] == False): ?>
+
+                  <div class="alert alert-warning" role="alert" style="text-align: center;">
+                    <p>**Debe ingresar una descripción para el usuario**</p>
+                  </div>
+
+              <?php endif; ?>
+
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">Fecha Creación: </span>
